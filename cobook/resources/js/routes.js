@@ -1,16 +1,74 @@
-import Vue from 'vue'
-import VueRouter from 'vue-router'
-import home from './components/App.vue';
-
+import Vue from "vue";
+import VueRouter from "vue-router";
+import store from "./store";
 Vue.use(VueRouter);
-export default new VueRouter({
-    mode: 'history',
-    scrollBehavior: (to, from, savedPosition) => ({ y: 0 }), 
+
+/* Guest Component */
+const Login = () =>
+    import(
+        "./components/Login.vue" /* webpackChunkName: "resource/js/components/login" */
+    );
+const Register = () =>
+    import(
+        "./components/Register.vue" /* webpackChunkName: "resource/js/components/register" */
+    );
+/* Guest Component */
+
+/* Authenticated Component */
+const Dashboard = () =>
+    import(
+        "./components/Dashboard.vue" /* webpackChunkName: "resource/js/components/dashboard" */
+    );
+/* Authenticated Component */
+
+var router = new VueRouter({
+    mode: "history",
+    scrollBehavior: (to, from, savedPosition) => ({ y: 0 }),
     routes: [
         {
+            path: "/login",
+            name: "login",
+            component: Login,
+            meta: {
+                middleware: "guest",
+                title: `Login`,
+            },
+        },
+        {
+            path: "/register",
+            name: "register",
+            component: Register,
+            meta: {
+                middleware: "guest",
+                title: `Register`,
+            },
+        },
+        {
             path: "/",
-            name: "home",
-            component: home,
+            name: "dashboard",
+            component: Dashboard,
+            meta: {
+                middleware: "auth",
+                title: `Dashboard`,
+            },
         },
     ],
 });
+
+router.beforeEach((to, from, next) => {
+    document.title = `${to.meta.title} - ${process.env.MIX_APP_NAME}`;
+    if (to.meta.middleware == "guest") {
+        if (store.state.auth.authenticated) {
+            next({ name: "dashboard" });
+        }
+        next();
+    } else {
+        if (store.state.auth.authenticated) {
+            next();
+        } else {
+            next({ name: "login" });
+        }
+    }
+});
+
+export default router;
