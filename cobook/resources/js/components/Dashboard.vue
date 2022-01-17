@@ -130,7 +130,7 @@ export default {
 
         handleDrag() {
             //get center and zoom level, store in local storage
-            //more
+            //more and more
         },
 
         getWorkshopPosition(workshop) {
