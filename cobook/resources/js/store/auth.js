@@ -1,42 +1,57 @@
-import axios from 'axios'
-import router from '../routes'
+import axios from "axios";
+import router from "../routes";
 
 export default {
     namespaced: true,
-    state:{
-        authenticated:false,
-        user:{}
+    state: {
+        authenticated: false,
+        user: {},
     },
-    getters:{
-        authenticated(state){
-            return state.authenticated
+    getters: {
+        authenticated(state) {
+            return state.authenticated;
         },
-        user(state){
-            return state.user
-        }
+        user(state) {
+            return state.user;
+        },
     },
-    mutations:{
-        SET_AUTHENTICATED (state, value) {
-            state.authenticated = value
+    mutations: {
+        SET_AUTHENTICATED(state, value) {
+            state.authenticated = value;
         },
-        SET_USER (state, value) {
-            state.user = value
-        }
+        SET_USER(state, value) {
+            state.user = value;
+        },
     },
-    actions:{
-        login({commit}){
-            return axios.get('/api/user').then(({data})=>{
-                commit('SET_USER',data)
-                commit('SET_AUTHENTICATED',true)
-                router.push({name:'dashboard'})
-            }).catch(({response:{data}})=>{
-                commit('SET_USER',{})
-                commit('SET_AUTHENTICATED',false)
-            })
+    actions: {
+        login({ commit }) {
+            return axios
+                .get("/api/user")
+                .then(({ data }) => {
+                    commit("SET_USER", data);
+                    commit("SET_AUTHENTICATED", true);
+                    router.push({ name: "dashboard" });
+                })
+                .catch(({ response: { data } }) => {
+                    commit("SET_USER", {});
+                    commit("SET_AUTHENTICATED", false);
+                });
         },
-        logout({commit}){
-            commit('SET_USER',{})
-            commit('SET_AUTHENTICATED',false)
-        }
-    }
-}
+        logout({ commit }) {
+            commit("SET_USER", {});
+            commit("SET_AUTHENTICATED", false);
+        },
+        me({ commit }) {
+            return axios
+                .get("/api/user")
+                .then((response) => {
+                    commit("SET_AUTHENTICATED", true);
+                    commit("SET_USER", response.data);
+                })
+                .catch(() => {
+                    commit("SET_AUTHENTICATED", false);
+                    commit("SET_USER", null);
+                });
+        },
+    },
+};

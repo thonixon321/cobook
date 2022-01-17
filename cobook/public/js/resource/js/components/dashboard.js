@@ -53,13 +53,46 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: "dashboard",
   data: function data() {
     return {
-      user: this.$store.state.auth.user
+      user: this.$store.state.auth.user,
+      map: null,
+      myCoordinates: {
+        lat: 0,
+        lng: 0
+      }
     };
+  },
+  computed: {
+    mapCoordinates: function mapCoordinates() {
+      if (!this.map) {
+        return {
+          lat: 0,
+          lng: 0
+        };
+      }
+
+      return {
+        lat: this.map.getCenter().lat().toFixed(4),
+        lng: this.map.getCenter().lng().toFixed(4)
+      };
+    }
   },
   methods: _objectSpread(_objectSpread({}, (0,vuex__WEBPACK_IMPORTED_MODULE_1__.mapActions)({
     signOut: "auth/logout"
@@ -90,8 +123,29 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           }
         }, _callee);
       }))();
+    },
+    handleDrag: function handleDrag() {//get center and zoom level, store in local storage
     }
-  })
+  }),
+  mounted: function mounted() {
+    var _this2 = this;
+
+    //add map to data obj
+    this.$refs.mapRef.$mapPromise.then(function (map) {
+      return _this2.map = map;
+    });
+  },
+  created: function created() {
+    var _this3 = this;
+
+    //get user's coordinates
+    this.$getLocation({}).then(function (coordinates) {
+      _this3.myCoordinates = coordinates;
+      console.log(_this3.myCoordinates);
+    })["catch"](function (error) {
+      return alert(error);
+    });
+  }
 });
 
 /***/ }),
@@ -955,10 +1009,37 @@ var render = function () {
       "div",
       { staticClass: "map" },
       [
-        _c("GmapMap", {
-          staticStyle: { width: "100%", height: "320px" },
-          attrs: { center: { lat: 10, lng: 10 }, zoom: 7 },
-        }),
+        _c("p", [_vm._v("Your coordinates:")]),
+        _vm._v(" "),
+        _c("p", [
+          _vm._v(
+            "\n            " +
+              _vm._s(_vm.myCoordinates.lat.toFixed(4)) +
+              " Latitude;\n            " +
+              _vm._s(_vm.myCoordinates.lng.toFixed(4)) +
+              " Longitude.\n        "
+          ),
+        ]),
+        _vm._v(" "),
+        _c(
+          "gmap-map",
+          {
+            ref: "mapRef",
+            staticStyle: { width: "100%", height: "420px" },
+            attrs: { center: _vm.myCoordinates, zoom: 7 },
+            on: { dragend: _vm.handleDrag },
+          },
+          [
+            _c("gmap-marker", {
+              attrs: {
+                position: _vm.myCoordinates,
+                clickable: true,
+                draggable: false,
+              },
+            }),
+          ],
+          1
+        ),
       ],
       1
     ),
