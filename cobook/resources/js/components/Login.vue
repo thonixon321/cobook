@@ -5,23 +5,53 @@
                 <div class="card shadow sm">
                     <div class="card-body">
                         <h1 class="text-center">Login</h1>
-                        <hr/>
-                        <form action="javascript:void(0)" class="row" method="post">
+                        <hr />
+                        <form
+                            action="javascript:void(0)"
+                            class="row"
+                            method="post"
+                        >
                             <div class="form-group col-12">
-                                <label for="email" class="font-weight-bold">Email</label>
-                                <input type="text" v-model="auth.email" name="email" id="email" class="form-control">
+                                <label for="email" class="font-weight-bold"
+                                    >Email</label
+                                >
+                                <input
+                                    type="text"
+                                    v-model="auth.email"
+                                    name="email"
+                                    id="email"
+                                    class="form-control"
+                                />
                             </div>
                             <div class="form-group col-12">
-                                <label for="password" class="font-weight-bold">Password</label>
-                                <input type="password" v-model="auth.password" name="password" id="password" class="form-control">
+                                <label for="password" class="font-weight-bold"
+                                    >Password</label
+                                >
+                                <input
+                                    type="password"
+                                    v-model="auth.password"
+                                    name="password"
+                                    id="password"
+                                    class="form-control"
+                                />
                             </div>
                             <div class="col-12 mb-2">
-                                <button type="submit" :disabled="processing" @click="login" class="btn btn-primary btn-block">
+                                <button
+                                    type="submit"
+                                    :disabled="processing"
+                                    @click="login"
+                                    class="btn btn-primary btn-block"
+                                >
                                     {{ processing ? "Please wait" : "Login" }}
                                 </button>
                             </div>
                             <div class="col-12 text-center">
-                                <label>Don't have an account? <router-link :to="{name:'register'}">Register Now!</router-link></label>
+                                <label
+                                    >Don't have an account?
+                                    <router-link :to="{ name: 'register' }"
+                                        >Register Now!</router-link
+                                    ></label
+                                >
                             </div>
                         </form>
                     </div>
@@ -32,33 +62,38 @@
 </template>
 
 <script>
-import { mapActions } from 'vuex'
+import { mapActions } from "vuex";
 export default {
-    name:"login",
-    data(){
+    name: "login",
+    data() {
         return {
-            auth:{
-                email:"",
-                password:""
+            auth: {
+                email: "",
+                password: "",
             },
-            processing:false
-        }
+            processing: false,
+        };
     },
-    methods:{
+    methods: {
         ...mapActions({
-            signIn:'auth/login'
+            signIn: "auth/login",
         }),
-        async login(){
-            this.processing = true
-            await axios.get('/sanctum/csrf-cookie')
-            await axios.post('/login',this.auth).then(({data})=>{
-                this.signIn()
-            }).catch(({response:{data}})=>{
-                alert(data.message)
-            }).finally(()=>{
-                this.processing = false
-            })
+        async login() {
+            this.processing = true;
+            await axios.get("/sanctum/csrf-cookie");
+            await axios
+                .post("/login", this.auth)
+                .then((response) => {
+                    this.signIn();
+                    console.log(response.data);
+                })
+                .catch((response) => {
+                    alert(response);
+                })
+                .finally(() => {
+                    this.processing = false;
+                });
         },
-    }
-}
+    },
+};
 </script>

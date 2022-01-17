@@ -46,13 +46,109 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: "dashboard",
   data: function data() {
     return {
-      user: this.$store.state.auth.user
+      user: this.$store.state.auth.user,
+      map: null,
+      blueMark: "http://maps.google.com/mapfiles/kml/paddle/blu-circle.png",
+      myCoordinates: {
+        lat: 0,
+        lng: 0
+      },
+      infoWindowOptions: {
+        pixelOffset: {
+          width: 0,
+          height: -35
+        }
+      },
+      infoWindowPosition: {
+        lat: 0,
+        lng: 0
+      },
+      activeWorkshop: {
+        description: "",
+        endDate: "",
+        location: {
+          address: "",
+          latitude: "",
+          longitude: "",
+          name: ""
+        },
+        name: "",
+        startDate: "",
+        workshop_id: ""
+      },
+      infoWindowOpened: false,
+      myInfoWindowOpened: false,
+      workshops: []
     };
+  },
+  computed: {
+    mapCoordinates: function mapCoordinates() {
+      if (!this.map) {
+        return {
+          lat: 0,
+          lng: 0
+        };
+      }
+
+      return {
+        lat: this.map.getCenter().lat().toFixed(4),
+        lng: this.map.getCenter().lng().toFixed(4)
+      };
+    }
   },
   methods: _objectSpread(_objectSpread({}, (0,vuex__WEBPACK_IMPORTED_MODULE_1__.mapActions)({
     signOut: "auth/logout"
@@ -66,7 +162,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
             switch (_context.prev = _context.next) {
               case 0:
                 _context.next = 2;
-                return axios.post('/logout').then(function (_ref) {
+                return axios.post("/logout").then(function (_ref) {
                   var data = _ref.data;
 
                   _this.signOut();
@@ -83,8 +179,70 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
           }
         }, _callee);
       }))();
+    },
+    handleDrag: function handleDrag() {//get center and zoom level, store in local storage
+    },
+    getWorkshopPosition: function getWorkshopPosition(workshop) {
+      console.log({
+        lat: parseFloat(workshop.location.latitude),
+        lng: parseFloat(workshop.location.longitude)
+      });
+      return {
+        lat: parseFloat(workshop.location.latitude),
+        lng: parseFloat(workshop.location.longitude)
+      };
+    },
+    handleMarkerClick: function handleMarkerClick(workshop) {
+      this.myInfoWindowOpened = false;
+      this.activeWorkshop = workshop;
+      this.infoWindowPosition = {
+        lat: parseFloat(this.activeWorkshop.location.latitude),
+        lng: parseFloat(this.activeWorkshop.location.longitude)
+      };
+      this.infoWindowOpened = true;
+    },
+    handleCloseClick: function handleCloseClick() {
+      this.myInfoWindowOpened = false;
+      this.infoWindowOpened = false;
+      this.activeWorkshop = {
+        description: "",
+        endDate: "",
+        location: {
+          address: "",
+          latitude: "",
+          longitude: "",
+          name: ""
+        },
+        name: "",
+        startDate: "",
+        workshop_id: ""
+      };
     }
-  })
+  }),
+  mounted: function mounted() {
+    var _this2 = this;
+
+    //add map to data obj
+    this.$refs.mapRef.$mapPromise.then(function (map) {
+      return _this2.map = map;
+    });
+  },
+  created: function created() {
+    var _this3 = this;
+
+    //get user's coordinates
+    this.$getLocation({}).then(function (coordinates) {
+      _this3.myCoordinates = coordinates;
+    })["catch"](function (error) {
+      return alert(error);
+    }); //get workshops
+
+    axios.get("/api/workshops").then(function (response) {
+      _this3.workshops = response.data.data;
+    })["catch"](function (error) {
+      alert(error);
+    });
+  }
 });
 
 /***/ }),
@@ -942,126 +1100,113 @@ var render = function () {
   var _h = _vm.$createElement
   var _c = _vm._self._c || _h
   return _c("div", [
-    _vm._v("\n    \n     Hello " + _vm._s(_vm.user.name) + "!\n\n    "),
+    _c("h2", [_vm._v("Hello " + _vm._s(_vm.user.name) + "!")]),
+    _vm._v(" "),
+    _c(
+      "div",
+      { staticClass: "map" },
+      [
+        _c(
+          "gmap-map",
+          {
+            ref: "mapRef",
+            staticStyle: { width: "100%", height: "420px" },
+            attrs: { center: _vm.myCoordinates, zoom: 10 },
+            on: { dragend: _vm.handleDrag },
+          },
+          [
+            _c(
+              "gmap-info-window",
+              {
+                attrs: {
+                  options: _vm.infoWindowOptions,
+                  position: _vm.myCoordinates,
+                  opened: _vm.myInfoWindowOpened,
+                },
+                on: { closeclick: _vm.handleCloseClick },
+              },
+              [
+                _c("div", { staticClass: "info-window-me" }, [
+                  _c("h3", [_vm._v("My location")]),
+                  _vm._v(" "),
+                  _c("p", [
+                    _vm._v(
+                      "Latitude: " + _vm._s(_vm.myCoordinates.lat.toFixed(4))
+                    ),
+                  ]),
+                  _vm._v(" "),
+                  _c("p", [
+                    _vm._v(
+                      "Longitude: " + _vm._s(_vm.myCoordinates.lng.toFixed(4))
+                    ),
+                  ]),
+                ]),
+              ]
+            ),
+            _vm._v(" "),
+            _c("gmap-marker", {
+              attrs: {
+                position: _vm.myCoordinates,
+                clickable: true,
+                draggable: false,
+                icon: _vm.blueMark,
+              },
+              on: {
+                click: function ($event) {
+                  _vm.myInfoWindowOpened = true
+                },
+              },
+            }),
+            _vm._v(" "),
+            _c(
+              "gmap-info-window",
+              {
+                attrs: {
+                  options: _vm.infoWindowOptions,
+                  position: _vm.infoWindowPosition,
+                  opened: _vm.infoWindowOpened,
+                },
+                on: { closeclick: _vm.handleCloseClick },
+              },
+              [
+                _c("div", { staticClass: "info-window" }, [
+                  _c("h3", [_vm._v(_vm._s(_vm.activeWorkshop.name))]),
+                  _vm._v(" "),
+                  _c("p", [
+                    _vm._v(_vm._s(_vm.activeWorkshop.location.address)),
+                  ]),
+                ]),
+              ]
+            ),
+            _vm._v(" "),
+            _vm._l(_vm.workshops, function (workshop, index) {
+              return _c("gmap-marker", {
+                key: index,
+                attrs: {
+                  position: _vm.getWorkshopPosition(workshop),
+                  clickable: true,
+                  draggable: false,
+                },
+                on: {
+                  click: function ($event) {
+                    return _vm.handleMarkerClick(workshop)
+                  },
+                },
+              })
+            }),
+          ],
+          2
+        ),
+      ],
+      1
+    ),
+    _vm._v(" "),
     _c("button", { on: { click: _vm.logout } }, [_vm._v("Logout")]),
   ])
 }
 var staticRenderFns = []
 render._withStripped = true
 
-
-
-/***/ }),
-
-/***/ "./node_modules/vue-loader/lib/runtime/componentNormalizer.js":
-/*!********************************************************************!*\
-  !*** ./node_modules/vue-loader/lib/runtime/componentNormalizer.js ***!
-  \********************************************************************/
-/***/ ((__unused_webpack_module, __webpack_exports__, __webpack_require__) => {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-/* harmony export */ __webpack_require__.d(__webpack_exports__, {
-/* harmony export */   "default": () => (/* binding */ normalizeComponent)
-/* harmony export */ });
-/* globals __VUE_SSR_CONTEXT__ */
-
-// IMPORTANT: Do NOT use ES2015 features in this file (except for modules).
-// This module is a runtime utility for cleaner component module output and will
-// be included in the final webpack user bundle.
-
-function normalizeComponent (
-  scriptExports,
-  render,
-  staticRenderFns,
-  functionalTemplate,
-  injectStyles,
-  scopeId,
-  moduleIdentifier, /* server only */
-  shadowMode /* vue-cli only */
-) {
-  // Vue.extend constructor export interop
-  var options = typeof scriptExports === 'function'
-    ? scriptExports.options
-    : scriptExports
-
-  // render functions
-  if (render) {
-    options.render = render
-    options.staticRenderFns = staticRenderFns
-    options._compiled = true
-  }
-
-  // functional template
-  if (functionalTemplate) {
-    options.functional = true
-  }
-
-  // scopedId
-  if (scopeId) {
-    options._scopeId = 'data-v-' + scopeId
-  }
-
-  var hook
-  if (moduleIdentifier) { // server build
-    hook = function (context) {
-      // 2.3 injection
-      context =
-        context || // cached call
-        (this.$vnode && this.$vnode.ssrContext) || // stateful
-        (this.parent && this.parent.$vnode && this.parent.$vnode.ssrContext) // functional
-      // 2.2 with runInNewContext: true
-      if (!context && typeof __VUE_SSR_CONTEXT__ !== 'undefined') {
-        context = __VUE_SSR_CONTEXT__
-      }
-      // inject component styles
-      if (injectStyles) {
-        injectStyles.call(this, context)
-      }
-      // register component module identifier for async chunk inferrence
-      if (context && context._registeredComponents) {
-        context._registeredComponents.add(moduleIdentifier)
-      }
-    }
-    // used by ssr in case component is cached and beforeCreate
-    // never gets called
-    options._ssrRegister = hook
-  } else if (injectStyles) {
-    hook = shadowMode
-      ? function () {
-        injectStyles.call(
-          this,
-          (options.functional ? this.parent : this).$root.$options.shadowRoot
-        )
-      }
-      : injectStyles
-  }
-
-  if (hook) {
-    if (options.functional) {
-      // for template-only hot-reload because in that case the render fn doesn't
-      // go through the normalizer
-      options._injectStyles = hook
-      // register for functional component in vue file
-      var originalRender = options.render
-      options.render = function renderWithStyleInjection (h, context) {
-        hook.call(context)
-        return originalRender(h, context)
-      }
-    } else {
-      // inject component registration as beforeCreate hook
-      var existing = options.beforeCreate
-      options.beforeCreate = existing
-        ? [].concat(existing, hook)
-        : [hook]
-    }
-  }
-
-  return {
-    exports: scriptExports,
-    options: options
-  }
-}
 
 
 /***/ })
