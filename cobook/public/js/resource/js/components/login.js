@@ -70,6 +70,36 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: "login",
@@ -83,7 +113,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     };
   },
   methods: _objectSpread(_objectSpread({}, (0,vuex__WEBPACK_IMPORTED_MODULE_1__.mapActions)({
-    signIn: 'auth/login'
+    signIn: "auth/login"
   })), {}, {
     login: function login() {
       var _this = this;
@@ -95,17 +125,16 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
               case 0:
                 _this.processing = true;
                 _context.next = 3;
-                return axios.get('/sanctum/csrf-cookie');
+                return axios.get("/sanctum/csrf-cookie");
 
               case 3:
                 _context.next = 5;
-                return axios.post('/login', _this.auth).then(function (_ref) {
-                  var data = _ref.data;
-
+                return axios.post("/login", _this.auth).then(function (response) {
                   _this.signIn();
-                })["catch"](function (_ref2) {
-                  var data = _ref2.response.data;
-                  alert(data.message);
+
+                  console.log(response.data);
+                })["catch"](function (response) {
+                  alert(response);
                 })["finally"](function () {
                   _this.processing = false;
                 });
@@ -1083,7 +1112,9 @@ var render = function () {
                   _c(
                     "label",
                     [
-                      _vm._v("Don't have an account? "),
+                      _vm._v(
+                        "Don't have an account?\n                                "
+                      ),
                       _c(
                         "router-link",
                         { attrs: { to: { name: "register" } } },

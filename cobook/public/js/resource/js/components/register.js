@@ -78,9 +78,63 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
-  name: 'register',
+  name: "register",
   data: function data() {
     return {
       user: {
@@ -93,7 +147,7 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     };
   },
   methods: _objectSpread(_objectSpread({}, (0,vuex__WEBPACK_IMPORTED_MODULE_1__.mapActions)({
-    signIn: 'auth/login'
+    signIn: "auth/login"
   })), {}, {
     register: function register() {
       var _this = this;
@@ -105,11 +159,10 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
               case 0:
                 _this.processing = true;
                 _context.next = 3;
-                return axios.post('/register', _this.user).then(function (response) {
+                return axios.post("/register", _this.user).then(function (response) {
                   _this.signIn();
-                })["catch"](function (_ref) {
-                  var data = _ref.response.data;
-                  alert(data.message);
+                })["catch"](function (response) {
+                  alert(response);
                 })["finally"](function () {
                   _this.processing = false;
                 });
@@ -1128,7 +1181,7 @@ var render = function () {
                     ],
                     staticClass: "form-control",
                     attrs: {
-                      type: "password_confirmation",
+                      type: "password",
                       name: "password_confirmation",
                       id: "password_confirmation",
                       placeholder: "Enter Password",
@@ -1170,7 +1223,9 @@ var render = function () {
                   _c(
                     "label",
                     [
-                      _vm._v("Already have an account? "),
+                      _vm._v(
+                        "Already have an account?\n                                "
+                      ),
                       _c("router-link", { attrs: { to: { name: "login" } } }, [
                         _vm._v("Login Now!"),
                       ]),

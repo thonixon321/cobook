@@ -27,14 +27,15 @@ export default {
         login({ commit }) {
             return axios
                 .get("/api/user")
-                .then(({ data }) => {
-                    commit("SET_USER", data);
+                .then((response) => {
+                    commit("SET_USER", response.data);
                     commit("SET_AUTHENTICATED", true);
                     router.push({ name: "dashboard" });
                 })
-                .catch(({ response: { data } }) => {
+                .catch((response) => {
                     commit("SET_USER", {});
                     commit("SET_AUTHENTICATED", false);
+                    alert(response);
                 });
         },
         logout({ commit }) {

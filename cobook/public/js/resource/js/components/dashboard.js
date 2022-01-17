@@ -66,6 +66,35 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
 //
 //
 //
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
+//
 
 /* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = ({
   name: "dashboard",
@@ -73,10 +102,37 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     return {
       user: this.$store.state.auth.user,
       map: null,
+      blueMark: "http://maps.google.com/mapfiles/kml/paddle/blu-circle.png",
       myCoordinates: {
         lat: 0,
         lng: 0
-      }
+      },
+      infoWindowOptions: {
+        pixelOffset: {
+          width: 0,
+          height: -35
+        }
+      },
+      infoWindowPosition: {
+        lat: 0,
+        lng: 0
+      },
+      activeWorkshop: {
+        description: "",
+        endDate: "",
+        location: {
+          address: "",
+          latitude: "",
+          longitude: "",
+          name: ""
+        },
+        name: "",
+        startDate: "",
+        workshop_id: ""
+      },
+      infoWindowOpened: false,
+      myInfoWindowOpened: false,
+      workshops: []
     };
   },
   computed: {
@@ -125,6 +181,42 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
       }))();
     },
     handleDrag: function handleDrag() {//get center and zoom level, store in local storage
+    },
+    getWorkshopPosition: function getWorkshopPosition(workshop) {
+      console.log({
+        lat: parseFloat(workshop.location.latitude),
+        lng: parseFloat(workshop.location.longitude)
+      });
+      return {
+        lat: parseFloat(workshop.location.latitude),
+        lng: parseFloat(workshop.location.longitude)
+      };
+    },
+    handleMarkerClick: function handleMarkerClick(workshop) {
+      this.myInfoWindowOpened = false;
+      this.activeWorkshop = workshop;
+      this.infoWindowPosition = {
+        lat: parseFloat(this.activeWorkshop.location.latitude),
+        lng: parseFloat(this.activeWorkshop.location.longitude)
+      };
+      this.infoWindowOpened = true;
+    },
+    handleCloseClick: function handleCloseClick() {
+      this.myInfoWindowOpened = false;
+      this.infoWindowOpened = false;
+      this.activeWorkshop = {
+        description: "",
+        endDate: "",
+        location: {
+          address: "",
+          latitude: "",
+          longitude: "",
+          name: ""
+        },
+        name: "",
+        startDate: "",
+        workshop_id: ""
+      };
     }
   }),
   mounted: function mounted() {
@@ -141,9 +233,14 @@ function _defineProperty(obj, key, value) { if (key in obj) { Object.definePrope
     //get user's coordinates
     this.$getLocation({}).then(function (coordinates) {
       _this3.myCoordinates = coordinates;
-      console.log(_this3.myCoordinates);
     })["catch"](function (error) {
       return alert(error);
+    }); //get workshops
+
+    axios.get("/api/workshops").then(function (response) {
+      _this3.workshops = response.data.data;
+    })["catch"](function (error) {
+      alert(error);
     });
   }
 });
@@ -1009,36 +1106,96 @@ var render = function () {
       "div",
       { staticClass: "map" },
       [
-        _c("p", [_vm._v("Your coordinates:")]),
-        _vm._v(" "),
-        _c("p", [
-          _vm._v(
-            "\n            " +
-              _vm._s(_vm.myCoordinates.lat.toFixed(4)) +
-              " Latitude;\n            " +
-              _vm._s(_vm.myCoordinates.lng.toFixed(4)) +
-              " Longitude.\n        "
-          ),
-        ]),
-        _vm._v(" "),
         _c(
           "gmap-map",
           {
             ref: "mapRef",
             staticStyle: { width: "100%", height: "420px" },
-            attrs: { center: _vm.myCoordinates, zoom: 7 },
+            attrs: { center: _vm.myCoordinates, zoom: 10 },
             on: { dragend: _vm.handleDrag },
           },
           [
+            _c(
+              "gmap-info-window",
+              {
+                attrs: {
+                  options: _vm.infoWindowOptions,
+                  position: _vm.myCoordinates,
+                  opened: _vm.myInfoWindowOpened,
+                },
+                on: { closeclick: _vm.handleCloseClick },
+              },
+              [
+                _c("div", { staticClass: "info-window-me" }, [
+                  _c("h3", [_vm._v("My location")]),
+                  _vm._v(" "),
+                  _c("p", [
+                    _vm._v(
+                      "Latitude: " + _vm._s(_vm.myCoordinates.lat.toFixed(4))
+                    ),
+                  ]),
+                  _vm._v(" "),
+                  _c("p", [
+                    _vm._v(
+                      "Longitude: " + _vm._s(_vm.myCoordinates.lng.toFixed(4))
+                    ),
+                  ]),
+                ]),
+              ]
+            ),
+            _vm._v(" "),
             _c("gmap-marker", {
               attrs: {
                 position: _vm.myCoordinates,
                 clickable: true,
                 draggable: false,
+                icon: _vm.blueMark,
+              },
+              on: {
+                click: function ($event) {
+                  _vm.myInfoWindowOpened = true
+                },
               },
             }),
+            _vm._v(" "),
+            _c(
+              "gmap-info-window",
+              {
+                attrs: {
+                  options: _vm.infoWindowOptions,
+                  position: _vm.infoWindowPosition,
+                  opened: _vm.infoWindowOpened,
+                },
+                on: { closeclick: _vm.handleCloseClick },
+              },
+              [
+                _c("div", { staticClass: "info-window" }, [
+                  _c("h3", [_vm._v(_vm._s(_vm.activeWorkshop.name))]),
+                  _vm._v(" "),
+                  _c("p", [
+                    _vm._v(_vm._s(_vm.activeWorkshop.location.address)),
+                  ]),
+                ]),
+              ]
+            ),
+            _vm._v(" "),
+            _vm._l(_vm.workshops, function (workshop, index) {
+              return _c("gmap-marker", {
+                key: index,
+                attrs: {
+                  position: _vm.getWorkshopPosition(workshop),
+                  clickable: true,
+                  draggable: false,
+                },
+                on: {
+                  click: function ($event) {
+                    return _vm.handleMarkerClick(workshop)
+                  },
+                },
+              })
+            }),
           ],
-          1
+          2
         ),
       ],
       1

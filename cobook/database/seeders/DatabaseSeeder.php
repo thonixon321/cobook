@@ -19,7 +19,7 @@ class DatabaseSeeder extends Seeder
                 'name' => 'Mushroom Cottage',
                 'address' => '123 Fake St. Coos Bay, OR 97420',
                 'latitude' => '43.3665',
-                'longitude' => '124.2179',
+                'longitude' => '-124.2179',
                 'created_at' => date('Y-m-d H:i:s'),
                 'updated_at' => date('Y-m-d H:i:s')
             ],
@@ -27,7 +27,7 @@ class DatabaseSeeder extends Seeder
                 'name' => 'Princess Palace',
                 'address' => '321 Princess Rd. Bandon, OR 97411',
                 'latitude' => '43.1190',
-                'longitude' => '124.4084',
+                'longitude' => '-124.4084',
                 'created_at' => date('Y-m-d H:i:s'),
                 'updated_at' => date('Y-m-d H:i:s')
             ],

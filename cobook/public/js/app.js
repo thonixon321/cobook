@@ -5498,26 +5498,25 @@ __webpack_require__.r(__webpack_exports__);
   actions: {
     login: function login(_ref) {
       var commit = _ref.commit;
-      return axios__WEBPACK_IMPORTED_MODULE_0___default().get("/api/user").then(function (_ref2) {
-        var data = _ref2.data;
-        commit("SET_USER", data);
+      return axios__WEBPACK_IMPORTED_MODULE_0___default().get("/api/user").then(function (response) {
+        commit("SET_USER", response.data);
         commit("SET_AUTHENTICATED", true);
         _routes__WEBPACK_IMPORTED_MODULE_1__["default"].push({
           name: "dashboard"
         });
-      })["catch"](function (_ref3) {
-        var data = _ref3.response.data;
+      })["catch"](function (response) {
         commit("SET_USER", {});
         commit("SET_AUTHENTICATED", false);
+        alert(response);
       });
     },
-    logout: function logout(_ref4) {
-      var commit = _ref4.commit;
+    logout: function logout(_ref2) {
+      var commit = _ref2.commit;
       commit("SET_USER", {});
       commit("SET_AUTHENTICATED", false);
     },
-    me: function me(_ref5) {
-      var commit = _ref5.commit;
+    me: function me(_ref3) {
+      var commit = _ref3.commit;
       return axios__WEBPACK_IMPORTED_MODULE_0___default().get("/api/user").then(function (response) {
         commit("SET_AUTHENTICATED", true);
         commit("SET_USER", response.data);
