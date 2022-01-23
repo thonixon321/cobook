@@ -123,6 +123,8 @@ return [
 
     'key' => env('APP_KEY'),
 
+    'azure_sub_key' => env('AZURE_SUB_KEY'),
+
     'cipher' => 'AES-256-CBC',
 
     /*

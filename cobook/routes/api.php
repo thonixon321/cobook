@@ -21,5 +21,6 @@ Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
 });
 
 Route::middleware('auth:sanctum')->get('/workshops', [WorkshopController::class, 'index']);
+Route::middleware('auth:sanctum')->get('/latLng/{address}', [UserController::class, 'getLatLng']);
 //dev purposes only
 Route::get('/users', [UserController::class, 'index']);
