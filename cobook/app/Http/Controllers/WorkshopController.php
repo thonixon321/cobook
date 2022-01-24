@@ -30,7 +30,7 @@ class WorkshopController extends Controller
                                 ->where('locationEn', 1)
                                 ->first();
             } catch(QueryException $ex) {
-                return response()->apiJson([], 803, 'Bad Select', $ex->getMessage());
+                return response()->apiJson([], 401, 'Bad Select', $ex->getMessage());
             }
 
             $workshop->location = $location;
