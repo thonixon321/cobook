@@ -25,7 +25,7 @@ class WorkshopController extends Controller
         foreach($workshops as $workshop) {
             try {
                 $location =  DB::table('locations')
-                                ->select('name', 'address', 'latitude', 'longitude')
+                                ->select('location_id', 'name', 'address', 'latitude', 'longitude')
                                 ->where('location_id', $workshop->location_id)
                                 ->where('locationEn', 1)
                                 ->first();
@@ -47,7 +47,7 @@ class WorkshopController extends Controller
     {
         $location = '';
         $workshop = '';
-
+        //validate request
         try {
             $this->validate($request, [
                 'locationName' => 'required|string',
@@ -60,34 +60,32 @@ class WorkshopController extends Controller
                 'description' => 'required'
             ]);
         } catch(ValidationException $ex) {
-            // print_r($ex->errors());
-            // exit;
-
             return response()->apiJson([], 401, 'Bad Validation', json_encode($ex->errors()));
         }
-
+        //reformat date
         $startDate = date("Y-m-d", strtotime($request->startDate));
         $endDate = date("Y-m-d", strtotime($request->endDate));
-
-
+        //add location
         try {
             $location = DB::table('locations')->insertGetId([
                 'name' => $request->locationName,
                 'address' => $request->address,
                 'latitude' => $request->latitude,
-                'longitude' => $request->longitude
+                'longitude' => $request->longitude,
+                'created_by' => $request->user()->id
             ]);
         } catch(QueryException $ex) {
             return response()->apiJson([], 401, 'Bad Create', $ex->getMessage());
         }
-
+        //add workshop
         try {
             $workshop = DB::table('workshops')->insertGetId([
                 'location_id' => $location,
                 'name' => $request->workshopName,
                 'startDate' => $startDate,
                 'endDate' => $endDate,
-                'description' => $request->description
+                'description' => $request->description,
+                'created_by' => $request->user()->id
             ]);
         } catch(QueryException $ex) {
             return response()->apiJson([], 401, 'Bad Create', $ex->getMessage());
@@ -96,6 +94,69 @@ class WorkshopController extends Controller
         return response()->apiJson([
             'result' => 'success',
             'workshop_id' => $workshop 
+        ]);
+    }
+
+
+
+    //update a workshop
+    public function update(Request $request)
+    {
+        $locationId = (int) $request->locationId;
+        $workshopId = (int) $request->workshopId;
+        $location = '';
+        $workshop = '';
+    
+        //validate request
+        try {
+            $this->validate($request, [
+                'locationName' => 'required|string',
+                'address' => 'required|string',
+                'latitude' => 'required|numeric',
+                'longitude' => 'required|numeric',
+                'workshopName' => 'required|string',
+                'startDate' => 'required|date',
+                'endDate' => 'required|date',
+                'description' => 'required'
+            ]);
+        } catch(ValidationException $ex) {
+            return response()->apiJson([], 401, 'Bad Validation', json_encode($ex->errors()));
+        }
+        //reformat date
+        $startDate = date("Y-m-d", strtotime($request->startDate));
+        $endDate = date("Y-m-d", strtotime($request->endDate));
+        //update location
+        try {
+            DB::table('locations')
+            ->where('location_id', $locationId)
+            ->where('locationEn', 1)
+            ->update([
+                'name' => $request->locationName,
+                'address' => $request->address,
+                'latitude' => $request->latitude,
+                'longitude' => $request->longitude
+            ]);
+        } catch(QueryException $ex) {
+            return response()->apiJson([], 401, 'Bad Update', $ex->getMessage());
+        }
+        //update workshop
+        try {
+            DB::table('workshops')
+            ->where('workshop_id', $workshopId)
+            ->where('workshopEn', 1)
+            ->update([
+                'location_id' => $locationId,
+                'name' => $request->workshopName,
+                'startDate' => $startDate,
+                'endDate' => $endDate,
+                'description' => $request->description
+            ]);
+        } catch(QueryException $ex) {
+            return response()->apiJson([], 401, 'Bad Update', $ex->getMessage());
+        }
+
+        return response()->apiJson([
+            'result' => 'success'
         ]);
     }
 

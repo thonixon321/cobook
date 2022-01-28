@@ -17,3 +17,5 @@ Route::get('/users', [UserController::class, 'index']);
 //Workshop Routes
 Route::middleware('auth:sanctum')->get('/workshops', [WorkshopController::class, 'index']);
 Route::middleware('auth:sanctum')->post('/workshops', [WorkshopController::class, 'create']);
+Route::middleware('auth:sanctum')->put('/workshops/{workshopId}/location/{locationId}', [WorkshopController::class, 'update']);
+Route::middleware('auth:sanctum')->delete('/workshops/{workshopId}', [WorkshopController::class, 'delete']);
