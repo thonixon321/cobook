@@ -202,7 +202,7 @@ class WorkshopController extends Controller
 
 
     //get attendees for workshop
-    public function getAttendeesForWorkshop(Request $request)
+    public function getAttendees(Request $request)
     {
         $attendees = '';
         
