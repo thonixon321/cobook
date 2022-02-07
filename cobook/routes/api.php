@@ -19,4 +19,5 @@ Route::middleware('auth:sanctum')->get('/workshops', [WorkshopController::class,
 Route::middleware('auth:sanctum')->post('/workshops', [WorkshopController::class, 'create']);
 Route::middleware('auth:sanctum')->put('/workshops/{workshopId}/location/{locationId}', [WorkshopController::class, 'update']);
 Route::middleware('auth:sanctum')->delete('/workshops/{workshopId}', [WorkshopController::class, 'delete']);
-Route::middleware('auth:sanctum')->post('/workshops/addAttendee', [WorkshopController::class, 'addAttendee']);
+Route::middleware('auth:sanctum')->post('/workshops/{workshopId}/addAttendee', [WorkshopController::class, 'addAttendee']);
+Route::middleware('auth:sanctum')->get('/workshops/{workshopId}/attendees', [WorkshopController::class, 'getAttendeesForWorkshop']);

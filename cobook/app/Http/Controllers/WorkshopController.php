@@ -174,7 +174,66 @@ class WorkshopController extends Controller
     //add attendee for workshop
     public function addAttendee(Request $request)
     {
+        //validate request
+        try {
+            $this->validate($request, [
+                'workshopId' => 'required|integer'
+            ]);
+        } catch(ValidationException $ex) {
+            return response()->apiJson([], 401, 'Bad Validation', json_encode($ex->errors()));
+        }
 
+        //add attendee to workshop
+        try {
+            DB::table('user_workshop')
+            ->insert([
+                'user_id' => $request->user()->id,
+                'workshop_id' => $request->workshopId
+            ]);
+        } catch(QueryException $ex) {
+            return response()->apiJson([], 401, 'Bad Insert', $ex->getMessage());
+        }
+
+        return response()->apiJson([
+            'result' => 'success'
+        ]);
+    }
+
+
+
+    //get attendees for workshop
+    public function getAttendeesForWorkshop(Request $request)
+    {
+        $attendees = '';
+        
+        //validate request
+        try {
+            $this->validate($request, [
+                'workshopId' => 'required|integer'
+            ]);
+        } catch(ValidationException $ex) {
+            return response()->apiJson([], 401, 'Bad Validation', json_encode($ex->errors()));
+        }
+
+        $userWorkshop = $this->checkAuth();
+
+        //make sure user is the creator of requested workshop
+        if ($userWorkshop->created_by === $request->user()->id) {
+            //get attendees
+            try {
+              $attendees = DB::table('user_workshop')
+                ->select('name', 'email')
+                ->leftJoin('users', 'users.id', '=', 'user_workshop.user_id')
+                ->where('workshop_id', $request->workshop_id)
+                ->get();
+            } catch(QueryException $ex) {
+                return response()->apiJson([], 401, 'Bad Insert', $ex->getMessage());
+            }
+        } else {
+            return response()->apiJson([], 401, 'Bad User', $ex->getMessage());
+        }
+
+        return response()->apiJson($attendees);
     }
 
 
