@@ -222,9 +222,10 @@ class WorkshopController extends Controller
             //get attendees
             try {
               $attendees = DB::table('user_workshop')
-                ->select('name', 'email')
+                ->select('users.name', 'users.email')
                 ->leftJoin('users', 'users.id', '=', 'user_workshop.user_id')
-                ->where('workshop_id', $request->workshop_id)
+                ->where('user_workshop.workshop_id', $request->workshop_id)
+                ->where('users.userEn', 1)
                 ->get();
             } catch(QueryException $ex) {
                 return response()->apiJson([], 401, 'Bad Insert', $ex->getMessage());
@@ -234,6 +235,13 @@ class WorkshopController extends Controller
         }
 
         return response()->apiJson($attendees);
+    }
+
+
+
+    public function removeAttendee(Request $request)
+    {
+        
     }
 
 
