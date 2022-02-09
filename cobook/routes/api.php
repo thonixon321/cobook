@@ -15,7 +15,7 @@ Route::middleware('auth:sanctum')->put('/user/latLng', [UserController::class, '
 Route::middleware('auth:sanctum')->delete('/user/{userId}', [UserController::class, 'deleteUser']);
 
 //Workshop Routes
-//note* the index route can also accept query for hostName to get workshops by host name
+//*note* the index route can also accept query for hostName to get workshops by host name
 Route::middleware('auth:sanctum')->get('/workshops', [WorkshopController::class, 'index']);
 Route::middleware('auth:sanctum')->post('/workshops', [WorkshopController::class, 'create']);
 Route::middleware('auth:sanctum')->put('/workshops/{workshopId}/location/{locationId}', [WorkshopController::class, 'update']);
