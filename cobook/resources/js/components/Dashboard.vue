@@ -100,6 +100,10 @@ export default {
             lat: "",
             lng: "",
             user: this.$store.state.auth.user,
+            profileData: {
+                name: "",
+                email: "",
+            },
             map: null,
             blueMark:
                 "http://maps.google.com/mapfiles/kml/paddle/blu-circle.png",
@@ -176,6 +180,17 @@ export default {
                     console.log(response.data);
                     this.lat = response.data.data.lat;
                     this.lng = response.data.data.lng;
+                })
+                .catch((error) => {
+                    alert(error);
+                });
+        },
+
+        async updateProfile() {
+            await axios
+                .put("/user/profile-information", this.profileData)
+                .then((response) => {
+                    console.log(response.data);
                 })
                 .catch((error) => {
                     alert(error);

@@ -12,10 +12,16 @@ class WorkshopController extends Controller
     //retrieve all the workshops
     public function index(Request $request)
     {
+        $hostName = $request->query('hostName');
 
         try {
             $workshops = DB::table('workshops')
-                            ->select('workshop_id', 'location_id', 'name', 'startDate', 'endDate', 'description')
+                            ->select('workshop_id', 'location_id', 'workshops.name as workshopName','startDate', 'endDate', 'description', 'users.name', 'users.email')
+                            ->leftJoin('users', 'users.id', '=', 'workshops.created_by')
+                            ->when($hostName, function($query) use ($hostName) {
+                                //when host name is provided, search for workshops with that host
+                                $query->where('users.name', 'LIKE', '%'.$hostName.'%');
+                            })
                             ->where('workshopEn', 1)
                             ->get();
         } catch(QueryException $ex) {
@@ -40,6 +46,7 @@ class WorkshopController extends Controller
 
         return response()->apiJson($workshops);
     }
+
 
 
     //create a workshop
@@ -91,7 +98,7 @@ class WorkshopController extends Controller
             return response()->apiJson([], 401, 'Bad Create', $ex->getMessage());
         }
 
-        return response()->apiJson([
+        return response()->apiJson((object)[
             'result' => 'success',
             'workshop_id' => $workshop 
         ]);
@@ -159,7 +166,7 @@ class WorkshopController extends Controller
             } catch(QueryException $ex) {
                 return response()->apiJson([], 401, 'Bad Update', $ex->getMessage());
             }
-            return response()->apiJson([
+            return response()->apiJson((object)[
                 'result' => 'success'
             ]);
         } else {
@@ -188,13 +195,14 @@ class WorkshopController extends Controller
             DB::table('user_workshop')
             ->insert([
                 'user_id' => $request->user()->id,
-                'workshop_id' => $request->workshopId
+                'workshop_id' => $request->workshopId,
+                'role' => 'attendee'
             ]);
         } catch(QueryException $ex) {
             return response()->apiJson([], 401, 'Bad Insert', $ex->getMessage());
         }
 
-        return response()->apiJson([
+        return response()->apiJson((object)[
             'result' => 'success'
         ]);
     }
@@ -222,13 +230,13 @@ class WorkshopController extends Controller
             //get attendees
             try {
               $attendees = DB::table('user_workshop')
-                ->select('users.name', 'users.email')
+                ->select('users.name', 'users.email', 'role')
                 ->leftJoin('users', 'users.id', '=', 'user_workshop.user_id')
                 ->where('user_workshop.workshop_id', $request->workshop_id)
                 ->where('users.userEn', 1)
                 ->get();
             } catch(QueryException $ex) {
-                return response()->apiJson([], 401, 'Bad Insert', $ex->getMessage());
+                return response()->apiJson([], 401, 'Bad Select', $ex->getMessage());
             }
         } else {
             return response()->apiJson([], 401, 'Bad User', $ex->getMessage());
@@ -241,7 +249,19 @@ class WorkshopController extends Controller
 
     public function removeAttendee(Request $request)
     {
-        
+        //remove attendee from workshop
+        try {
+            DB::table('user_workshop')
+            ->where('workshop_id', (int) $request->workshopId)
+            ->where('user_id', $request->user()->id)
+            ->delete();
+        } catch(QueryException $ex) {
+            return response()->apiJson([], 401, 'Bad Delete', $ex->getMessage());
+        }
+
+        return response()->apiJson((object)[
+            'result' => 'success'
+        ]);
     }
 
 

@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Database\QueryException;
+use Illuminate\Validation\ValidationException;
 
 class UserController extends Controller
 {
@@ -22,7 +23,8 @@ class UserController extends Controller
     }
 
 
-    //get lat and lng of an address a user gives
+    //get lat and lng of an address a user gives - 
+    //can be used to automatically update map location
     public function getLatLng($address)
     {
         $response = '';
@@ -44,5 +46,30 @@ class UserController extends Controller
 
         return response()->apiJson(['lat' => $lat, 'lng' => $lng]);
 
+    }
+
+    //update user info, lat and lng
+    public function updateUserLatLng(Request $request)
+    {
+        //validate request
+        try {
+            $this->validate($request, [
+                'latitude' => 'required|numeric',
+                'longitude' => 'required|numeric'
+            ]);
+        } catch(ValidationException $ex) {
+            return response()->apiJson([], 401, 'Bad Validation', json_encode($ex->errors()));
+        }
+
+        try {
+            DB::table('users')->update([
+                'latitude' => $request->latitude,
+                'longitude' => $request->longitude
+            ]);
+        } catch(QueryException $ex) {
+            return response()->apiJson([], 401, 'Bad Update', $ex->getMessage());
+        }
+
+        return response()->apiJson((object)['result' => 'success']);
     }
 }
