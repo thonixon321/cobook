@@ -21,6 +21,7 @@ class CreateWorkshopsTable extends Migration
             $table->dateTime('endDate');
             $table->text('description');
             $table->timestamps();
+            $table->unsignedInteger('created_by')->default(1);
             $table->unsignedTinyInteger('workshopEn')->default(1);
         });
     }

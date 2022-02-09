@@ -20,6 +20,7 @@ class CreateLocationsTable extends Migration
             $table->decimal('latitude', 6, 4);
             $table->decimal('longitude', 7, 4);
             $table->timestamps();
+            $table->unsignedInteger('created_by')->default(1);
             $table->unsignedTinyInteger('locationEn')->default(1);
         });
     }
