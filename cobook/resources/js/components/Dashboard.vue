@@ -66,7 +66,7 @@
                     @closeclick="handleCloseClick"
                 >
                     <div class="info-window">
-                        <h3>{{ activeWorkshop.name }}</h3>
+                        <h3>{{ activeWorkshop.workshopName }}</h3>
                         <p>{{ activeWorkshop.location.address }}</p>
                     </div>
                 </gmap-info-window>
