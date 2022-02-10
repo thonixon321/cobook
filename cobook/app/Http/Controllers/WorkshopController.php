@@ -97,6 +97,17 @@ class WorkshopController extends Controller
         } catch(QueryException $ex) {
             return response()->apiJson([], 401, 'Bad Create', $ex->getMessage());
         }
+        //creator of workshop is now the role of host for workshop
+        try {
+            DB::table('user_workshop')
+            ->insert([
+                'user_id' => $request->user()->id,
+                'workshop_id' => $workshop,
+                'role' => 'host'
+            ]);
+        } catch(QueryException $ex) {
+            return response()->apiJson([], 401, 'Bad Insert', $ex->getMessage());
+        }
 
         return response()->apiJson((object)[
             'result' => 'success',
@@ -232,7 +243,7 @@ class WorkshopController extends Controller
               $attendees = DB::table('user_workshop')
                 ->select('users.name', 'users.email', 'role')
                 ->leftJoin('users', 'users.id', '=', 'user_workshop.user_id')
-                ->where('user_workshop.workshop_id', $request->workshop_id)
+                ->where('user_workshop.workshop_id', (int) $request->workshop_id)
                 ->where('users.userEn', 1)
                 ->get();
             } catch(QueryException $ex) {
