@@ -18,7 +18,6 @@
     </head>
     <body class="antialiased">
         <div id="app">
-            <h2>Cobook</h2>
             <router-view></router-view>
         </div>
     </body>

@@ -14,6 +14,13 @@ class DatabaseSeeder extends Seeder
      */
     public function run()
     {
+        $user = [
+            'id' => 69,
+            'name' => 'The Creator',
+            'email' => 'creator@email.com',
+            'password' => bcrypt('password')
+        ];
+
         $locations = [
             [
                 'name' => 'Mushroom Cottage',
@@ -44,7 +51,7 @@ class DatabaseSeeder extends Seeder
                 'description' => 'This will be an amazing cob learning experience!',
                 'created_at' => date('Y-m-d H:i:s'),
                 'updated_at' => date('Y-m-d H:i:s'),
-                'created_by' => 1
+                'created_by' => 69
             ],
             [
                 'location_id' => 2,
@@ -54,9 +61,11 @@ class DatabaseSeeder extends Seeder
                 'description' => 'This will be a fun filled cob learning experience!',
                 'created_at' => date('Y-m-d H:i:s'),
                 'updated_at' => date('Y-m-d H:i:s'),
-                'created_by' => 1
+                'created_by' => 69
             ]
         ];
+
+        DB::table('users')->insert($user);
         
         foreach($locations as $location) {
             DB::table('locations')->insert($location);

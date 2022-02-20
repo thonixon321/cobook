@@ -11,11 +11,34 @@ export default new Vuex.Store({
 
     state: {
         welcomeMsg: "Hello user!",
+        workshops: [],
     },
 
-    getters: {},
+    getters: {
+        getWorkshops(state) {
+            return state.workshops;
+        },
+    },
 
-    mutations: {},
+    mutations: {
+        SET_WORKSHOPS(state, value) {
+            state.workshops = value;
+        },
+    },
 
-    actions: {},
+    actions: {
+        workshops({ commit }) {
+            return axios
+                .get("/api/workshops")
+                .then((response) => {
+                    console.log({
+                        data: response.data.data,
+                    });
+                    commit("SET_WORKSHOPS", response.data.data);
+                })
+                .catch((error) => {
+                    alert(error);
+                });
+        },
+    },
 });

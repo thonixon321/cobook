@@ -14,12 +14,17 @@ const Register = () =>
     );
 /* Guest Component */
 
-/* Authenticated Component */
+/* Authenticated Components */
 const Dashboard = () =>
     import(
         "./components/Dashboard.vue" /* webpackChunkName: "resource/js/components/dashboard" */
     );
-/* Authenticated Component */
+
+const Workshops = () =>
+    import(
+        "./components/Workshops.vue" /* webpackChunkName: "resource/js/components/workshops" */
+    );
+/* Authenticated Components */
 
 var router = new VueRouter({
     mode: "history",
@@ -50,6 +55,15 @@ var router = new VueRouter({
             meta: {
                 middleware: "auth",
                 title: `Dashboard`,
+            },
+        },
+        {
+            path: "/workshops",
+            name: "workshops",
+            component: Workshops,
+            meta: {
+                middleware: "auth",
+                title: `Workshops`,
             },
         },
     ],
