@@ -1,8 +1,48 @@
 <template>
     <Layout>
         <div class="workshops_container">
+            <h2>Workshops</h2>
+            <div class="search_container">
+                <p>Search By:</p>
+                <div class="search_container--item">
+                    <label>
+                        <input
+                            type="radio"
+                            name="searchTypes"
+                            value="address"
+                            class="radioInput"
+                            v-model="searchType"
+                            checked
+                        />
+                        <span>Address</span>
+                    </label>
+                </div>
+                <div class="search_container--item">
+                    <label>
+                        <input
+                            type="radio"
+                            name="searchTypes"
+                            value="workshop"
+                            class="radioInput"
+                            v-model="searchType"
+                        />
+                        <span>Workshop</span>
+                    </label>
+                </div>
+                <div class="search_container--item">
+                    <label>
+                        <input
+                            type="radio"
+                            name="searchTypes"
+                            value="host"
+                            class="radioInput"
+                            v-model="searchType"
+                        />
+                        <span>Host</span>
+                    </label>
+                </div>
+            </div>
             <MapTool></MapTool>
-            <button @click="logout">Logout</button>
         </div>
     </Layout>
 </template>
@@ -16,23 +56,18 @@ export default {
     name: "workshops",
 
     data() {
-        return {};
+        return {
+            searchType: "address",
+        };
     },
 
     computed: {},
 
     methods: {
         ...mapActions({
-            signOut: "auth/logout",
             getWorkshops: "workshops",
+            activateLink: "activateLink",
         }),
-
-        async logout() {
-            await axios.post("/logout").then(({ data }) => {
-                this.signOut();
-                this.$router.push({ name: "login" });
-            });
-        },
     },
 
     mounted() {},
@@ -40,6 +75,7 @@ export default {
     created() {
         //get workshops
         this.getWorkshops();
+        this.activateLink("workshops");
     },
 
     components: {
@@ -52,6 +88,19 @@ export default {
 <style>
 div.workshops_container {
     width: 100%;
-    postion: relative;
+    position: relative;
+}
+
+.search_container {
+    display: flex;
+    align-items: center;
+}
+
+.search_container--item {
+    margin-left: 0.3em;
+}
+
+.radioInput {
+    display: none;
 }
 </style>

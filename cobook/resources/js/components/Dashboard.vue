@@ -1,11 +1,14 @@
 <template>
-    <div>
-        <h1>Dashboard Page</h1>
-        <router-link :to="{ name: 'workshops' }">Workshops</router-link>
-    </div>
+    <Layout>
+        <div>
+            <h2>Dashboard</h2>
+        </div>
+    </Layout>
 </template>
 
 <script>
+import Layout from "../layouts/Layout.vue";
+import { mapActions } from "vuex";
 export default {
     name: "dashboard",
 
@@ -15,9 +18,15 @@ export default {
 
     computed: {},
 
-    methods: {},
+    methods: {
+        ...mapActions({
+            activateLink: "activateLink",
+        }),
+    },
 
-    mounted() {},
+    mounted() {
+        this.activateLink("dashboard");
+    },
 
     created() {
         //get workshops
@@ -29,6 +38,10 @@ export default {
             .catch((error) => {
                 alert(error);
             });
+    },
+
+    components: {
+        Layout,
     },
 };
 </script>

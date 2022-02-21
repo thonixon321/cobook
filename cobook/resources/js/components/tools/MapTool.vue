@@ -2,8 +2,8 @@
     <div class="map">
         <gmap-map
             :center="myCoordinates"
-            :zoom="10"
-            style="width: 100%; height: 420px"
+            :zoom="7"
+            style="width: 100%; height: 330px"
             ref="mapRef"
             @dragend="handleDrag"
         >
@@ -180,3 +180,8 @@ export default {
     },
 };
 </script>
+<style scoped>
+.map {
+    margin-right: 1em;
+}
+</style>

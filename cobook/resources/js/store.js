@@ -12,6 +12,9 @@ export default new Vuex.Store({
     state: {
         welcomeMsg: "Hello user!",
         workshops: [],
+        dashboardActive: true,
+        workshopsActive: false,
+        hostActive: false,
     },
 
     getters: {
@@ -23,6 +26,20 @@ export default new Vuex.Store({
     mutations: {
         SET_WORKSHOPS(state, value) {
             state.workshops = value;
+        },
+
+        SET_ACTIVE_LINK(state, value) {
+            state.dashboardActive = false;
+            state.workshopsActive = false;
+            state.hostActive = false;
+
+            if (value == "dashboard") {
+                state.dashboardActive = true;
+            } else if (value == "workshops") {
+                state.workshopsActive = true;
+            } else {
+                state.hostActive = true;
+            }
         },
     },
 
@@ -39,6 +56,10 @@ export default new Vuex.Store({
                 .catch((error) => {
                     alert(error);
                 });
+        },
+
+        activateLink({ commit }, type) {
+            commit("SET_ACTIVE_LINK", type);
         },
     },
 });

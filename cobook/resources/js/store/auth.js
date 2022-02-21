@@ -6,6 +6,9 @@ export default {
     state: {
         authenticated: false,
         user: {},
+        profile: {
+            thumbnail: null,
+        },
     },
     getters: {
         authenticated(state) {
@@ -13,6 +16,9 @@ export default {
         },
         user(state) {
             return state.user;
+        },
+        getThumbnail(state) {
+            return state.profile.thumbnail;
         },
     },
     mutations: {
