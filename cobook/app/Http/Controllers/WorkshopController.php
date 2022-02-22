@@ -23,6 +23,7 @@ class WorkshopController extends Controller
                                 $query->where('users.name', 'LIKE', '%'.$hostName.'%');
                             })
                             ->where('workshopEn', 1)
+                            ->orderBy('startDate')
                             ->get();
         } catch(QueryException $ex) {
             return response()->apiJson([], 401, 'Bad Select', $ex->getMessage());
@@ -40,6 +41,8 @@ class WorkshopController extends Controller
             }
 
             $workshop->location = $location;
+            $workshop->startDate = date("m/d/Y", strtotime($workshop->startDate));
+            $workshop->endDate = date("m/d/Y", strtotime($workshop->endDate));
             unset($workshop->location_id);
             
         }
