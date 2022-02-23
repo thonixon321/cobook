@@ -13,16 +13,26 @@ class WorkshopController extends Controller
     public function index(Request $request)
     {
         $hostName = $request->query('hostName');
+        $workshopName = $request->query('workshopName');
+        $address = $request->query('address');
 
         try {
             $workshops = DB::table('workshops')
-                            ->select('workshop_id', 'location_id', 'workshops.name as workshopName','startDate', 'endDate', 'description', 'users.name', 'users.email')
+                            ->select('workshop_id', 'workshops.location_id', 'workshops.name as workshopName','startDate', 'endDate', 'description', 'users.name', 'users.email', 'locations.name as locationName', 'locations.address', 'locations.latitude', 'locations.longitude')
                             ->leftJoin('users', 'users.id', '=', 'workshops.created_by')
+                            ->leftJoin('locations', 'locations.location_id', '=', 'workshops.location_id')
                             ->when($hostName, function($query) use ($hostName) {
                                 //when host name is provided, search for workshops with that host
                                 $query->where('users.name', 'LIKE', '%'.$hostName.'%');
                             })
+                            ->when($workshopName, function($query) use ($workshopName) {
+                                $query->where('workshops.name', 'LIKE', '%'.$workshopName.'%');
+                            })
+                            ->when($address, function($query) use ($address) {
+                                $query->where('locations.address', 'LIKE', '%'.$address.'%');
+                            })
                             ->where('workshopEn', 1)
+                            ->where('locationEn', 1)
                             ->orderBy('startDate')
                             ->get();
         } catch(QueryException $ex) {
@@ -30,15 +40,12 @@ class WorkshopController extends Controller
         }
 
         foreach($workshops as $workshop) {
-            try {
-                $location =  DB::table('locations')
-                                ->select('location_id', 'name', 'address', 'latitude', 'longitude')
-                                ->where('location_id', $workshop->location_id)
-                                ->where('locationEn', 1)
-                                ->first();
-            } catch(QueryException $ex) {
-                return response()->apiJson([], 401, 'Bad Select', $ex->getMessage());
-            }
+            $location = (object) [
+                'locationName' => $workshop->locationName,
+                'address' => $workshop->address,
+                'latitude' => $workshop->latitude,
+                'longitude' => $workshop->longitude
+            ];
 
             $workshop->location = $location;
             $workshop->startDate = date("m/d/Y", strtotime($workshop->startDate));

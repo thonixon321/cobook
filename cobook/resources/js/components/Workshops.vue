@@ -37,7 +37,7 @@
                             <input
                                 type="radio"
                                 name="searchTypes"
-                                value="workshop"
+                                value="workshopName"
                                 class="radioInput"
                                 v-model="searchType"
                             />
@@ -55,7 +55,7 @@
                             <input
                                 type="radio"
                                 name="searchTypes"
-                                value="host"
+                                value="hostName"
                                 class="radioInput"
                                 v-model="searchType"
                             />
@@ -70,7 +70,10 @@
                     </div>
                 </div>
                 <div class="searchInput_container">
-                    <button class="svgBox">
+                    <button @click="retrieveAllWorkshops" class="showAllBtn">
+                        Show all workshops
+                    </button>
+                    <button @click="retrieveWorkshops" class="svgBox">
                         <svg
                             width="20"
                             height="20"
@@ -94,12 +97,16 @@
                             </g>
                         </svg>
                     </button>
-                    <input type="text" placeholder="search" />
+                    <input
+                        type="text"
+                        v-model="searchText"
+                        placeholder="search"
+                    />
                 </div>
             </div>
             <MapTool></MapTool>
             <h2 class="results_title">Results</h2>
-            <div class="results_container">
+            <div v-if="workshops.length" class="results_container">
                 <div
                     class="results_container--item"
                     v-for="(result, index) in workshops"
@@ -109,7 +116,9 @@
                         <div class="host_thumbnail">
                             <img v-if="thumbnail" :src="thumbnail" />
                             <div v-else>
-                                {{ result.name.charAt(0).toUpperCase() }}
+                                {{
+                                    result.workshopName.charAt(0).toUpperCase()
+                                }}
                             </div>
                         </div>
                         <div class="resultInfo">
@@ -128,6 +137,7 @@
                     </div>
                 </div>
             </div>
+            <div class="no-results" v-else>No Results Found</div>
         </div>
     </Layout>
 </template>
@@ -135,7 +145,7 @@
 <script>
 import Layout from "../layouts/Layout.vue";
 import MapTool from "./tools/MapTool.vue";
-import { mapActions, mapGetters } from "vuex";
+import { mapActions, mapGetters, mapState } from "vuex";
 
 export default {
     name: "workshops",
@@ -143,6 +153,7 @@ export default {
     data() {
         return {
             searchType: "address",
+            searchText: "",
             leftPosition: true,
             middlePosition: false,
             rightPosition: false,
@@ -152,6 +163,8 @@ export default {
     computed: {
         ...mapGetters({
             workshops: "getWorkshops",
+            thumbnail: "auth/getThumbnail",
+            locationOfUser: "auth/getUserLocation",
         }),
     },
 
@@ -159,6 +172,8 @@ export default {
         ...mapActions({
             getWorkshops: "workshops",
             activateLink: "activateLink",
+            centerMap: "centerMap",
+            userLocation: "auth/userLocation",
         }),
 
         changeSearchType(type) {
@@ -176,14 +191,44 @@ export default {
                 this.rightPosition = false;
             }
         },
+
+        retrieveWorkshops() {
+            let coordinates = {};
+            if (this.searchText == "") {
+                this.getWorkshops("");
+                this.centerMap(this.locationOfUser);
+            } else {
+                if (this.searchType == "address") {
+                    this.getWorkshops("?address=" + this.searchText);
+                } else if (this.searchType == "workshopName") {
+                    this.getWorkshops("?workshopName=" + this.searchText);
+                } else {
+                    this.getWorkshops("?hostName=" + this.searchText);
+                }
+                coordinates.lat = this.workshops[0].location.latitude;
+                coordinates.lng = this.workshops[0].location.longitude;
+                this.centerMap(coordinates);
+            }
+        },
+
+        retrieveAllWorkshops() {
+            this.getWorkshops("");
+        },
     },
 
     mounted() {},
 
     created() {
         //get workshops
-        this.getWorkshops();
+        this.getWorkshops("");
         this.activateLink("workshops");
+        //get user's coordinates
+        this.$getLocation({})
+            .then((coordinates) => {
+                this.centerMap(coordinates);
+                this.userLocation(coordinates);
+            })
+            .catch((error) => alert(error));
     },
 
     components: {
@@ -268,7 +313,7 @@ div.workshops_container {
     color: white;
     position: absolute;
     right: 0em;
-    height: 1.78em;
+    height: 2.2em;
     border: none;
     border-top-right-radius: 5px;
     border-bottom-right-radius: 5px;
@@ -338,5 +383,15 @@ div.workshops_container {
 .workshopName {
     font-size: 1.2em;
     font-weight: bolder;
+}
+
+.showAllBtn {
+    text-decoration: underline;
+    border: none;
+    background: none;
+    position: absolute;
+    top: -1.65em;
+    left: -0.3em;
+    cursor: pointer;
 }
 </style>

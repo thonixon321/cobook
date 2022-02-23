@@ -20,6 +20,9 @@ export default {
         getThumbnail(state) {
             return state.profile.thumbnail;
         },
+        getUserLocation(state) {
+            return state.user.location;
+        },
     },
     mutations: {
         SET_AUTHENTICATED(state, value) {
@@ -27,6 +30,9 @@ export default {
         },
         SET_USER(state, value) {
             state.user = value;
+        },
+        SET_USER_LOCATION(state, value) {
+            state.user.location = value;
         },
     },
     actions: {
@@ -59,6 +65,9 @@ export default {
                     commit("SET_AUTHENTICATED", false);
                     commit("SET_USER", null);
                 });
+        },
+        userLocation({ commit }, data) {
+            commit("SET_USER_LOCATION", data);
         },
     },
 };

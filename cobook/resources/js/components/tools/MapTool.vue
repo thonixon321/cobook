@@ -1,32 +1,12 @@
 <template>
     <div class="map">
         <gmap-map
-            :center="myCoordinates"
+            :center="mapCenter"
             :zoom="7"
             style="width: 100%; height: 330px"
             ref="mapRef"
             @dragend="handleDrag"
         >
-            <gmap-info-window
-                :options="infoWindowOptions"
-                :position="myCoordinates"
-                :opened="myInfoWindowOpened"
-                @closeclick="handleCloseClick"
-            >
-                <div class="info-window-me">
-                    <h3>My location</h3>
-                    <p>Latitude: {{ myCoordinates.lat.toFixed(4) }}</p>
-                    <p>Longitude: {{ myCoordinates.lng.toFixed(4) }}</p>
-                </div>
-            </gmap-info-window>
-            <gmap-marker
-                :position="myCoordinates"
-                :clickable="true"
-                :draggable="false"
-                :icon="blueMark"
-                @click="myInfoWindowOpened = true"
-            >
-            </gmap-marker>
             <gmap-info-window
                 :options="infoWindowOptions"
                 :position="infoWindowPosition"
@@ -62,10 +42,6 @@ export default {
             map: null,
             blueMark:
                 "http://maps.google.com/mapfiles/kml/paddle/blu-circle.png",
-            myCoordinates: {
-                lat: 0,
-                lng: 0,
-            },
             infoWindowOptions: {
                 pixelOffset: {
                     width: 0,
@@ -97,6 +73,7 @@ export default {
     computed: {
         ...mapGetters({
             workshops: "getWorkshops",
+            mapCenter: "getMapCenter",
         }),
 
         mapCoordinates() {
@@ -169,15 +146,7 @@ export default {
         this.$refs.mapRef.$mapPromise.then((map) => (this.map = map));
     },
 
-    created() {
-        //get user's coordinates
-        this.$getLocation({})
-            .then((coordinates) => {
-                this.myCoordinates = coordinates;
-                console.log(this.myCoordinates);
-            })
-            .catch((error) => alert(error));
-    },
+    created() {},
 };
 </script>
 <style scoped>

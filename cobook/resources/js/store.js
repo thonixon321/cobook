@@ -15,11 +15,19 @@ export default new Vuex.Store({
         dashboardActive: true,
         workshopsActive: false,
         hostActive: false,
+        mapCenter: {
+            lat: "",
+            lng: "",
+        },
     },
 
     getters: {
         getWorkshops(state) {
             return state.workshops;
+        },
+
+        getMapCenter(state) {
+            return state.mapCenter;
         },
     },
 
@@ -41,12 +49,16 @@ export default new Vuex.Store({
                 state.hostActive = true;
             }
         },
+
+        SET_MAP_CENTER(state, data) {
+            state.mapCenter = data;
+        },
     },
 
     actions: {
-        workshops({ commit }) {
+        workshops({ commit }, query) {
             return axios
-                .get("/api/workshops")
+                .get("/api/workshops" + query)
                 .then((response) => {
                     console.log({
                         data: response.data.data,
@@ -60,6 +72,11 @@ export default new Vuex.Store({
 
         activateLink({ commit }, type) {
             commit("SET_ACTIVE_LINK", type);
+        },
+
+        centerMap({ commit }, data) {
+            console.log({ coordinates: data });
+            commit("SET_MAP_CENTER", data);
         },
     },
 });
