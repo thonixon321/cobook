@@ -24,11 +24,10 @@ export default {
         }),
     },
 
-    mounted() {
-        this.activateLink("dashboard");
-    },
+    mounted() {},
 
     created() {
+        this.activateLink("dashboard");
         //get workshops
         axios
             .get("/api/workshops")

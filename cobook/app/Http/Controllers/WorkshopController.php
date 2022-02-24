@@ -59,6 +59,32 @@ class WorkshopController extends Controller
 
 
 
+    public function show(Request $request) 
+    {
+        $workshopId = (int) $request->workshopId;
+
+        try {
+            $workshop = DB::table('workshops')
+                            ->select('workshop_id', 'workshops.location_id', 'workshops.name as workshopName','startDate', 'endDate', 'description', 'users.name', 'users.email', 'locations.name as locationName', 'locations.address', 'locations.latitude', 'locations.longitude')
+                            ->leftJoin('users', 'users.id', '=', 'workshops.created_by')
+                            ->leftJoin('locations', 'locations.location_id', '=', 'workshops.location_id')
+                            ->where('workshop_id', $workshopId)
+                            ->where('workshopEn', 1)
+                            ->where('locationEn', 1)
+                            ->orderBy('startDate')
+                            ->first();
+        } catch(QueryException $ex) {
+            return response()->apiJson([], 401, 'Bad Select', $ex->getMessage());
+        }
+
+       $workshop->startDate = date("m/d/Y", strtotime($workshop->startDate));
+       $workshop->endDate = date("m/d/Y", strtotime($workshop->endDate));
+
+        return response()->apiJson($workshop);
+    }
+
+
+
     //create a workshop
     public function create(Request $request)
     {

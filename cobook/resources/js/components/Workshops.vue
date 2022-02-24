@@ -111,6 +111,7 @@
                     class="results_container--item"
                     v-for="(result, index) in workshops"
                     :key="index"
+                    @click="goToWorkshopPage(result)"
                 >
                     <div class="first_info">
                         <div class="host_thumbnail">
@@ -213,6 +214,12 @@ export default {
 
         retrieveAllWorkshops() {
             this.getWorkshops("");
+        },
+
+        goToWorkshopPage(workshop) {
+            router.push({
+                path: "workshops/" + workshop.workshop_id,
+            });
         },
     },
 

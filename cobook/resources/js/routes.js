@@ -25,6 +25,11 @@ const Workshops = () =>
         "./components/Workshops.vue" /* webpackChunkName: "resource/js/components/workshops" */
     );
 
+const Workshop = () =>
+    import(
+        "./components/Workshop.vue" /* webpackChunkName: "resource/js/components/workshop" */
+    );
+
 const Host = () =>
     import(
         "./components/Host.vue" /* webpackChunkName: "resource/js/components/host" */
@@ -69,6 +74,16 @@ var router = new VueRouter({
             meta: {
                 middleware: "auth",
                 title: `Workshops`,
+            },
+        },
+        {
+            path: "/workshops/:id",
+            name: "workshop",
+            props: true,
+            component: Workshop,
+            meta: {
+                middleware: "auth",
+                title: `Workshop`,
             },
         },
         {

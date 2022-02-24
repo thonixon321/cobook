@@ -12,6 +12,7 @@ export default new Vuex.Store({
     state: {
         welcomeMsg: "Hello user!",
         workshops: [],
+        selectedWorkshop: {},
         dashboardActive: true,
         workshopsActive: false,
         hostActive: false,
@@ -28,6 +29,10 @@ export default new Vuex.Store({
 
         getMapCenter(state) {
             return state.mapCenter;
+        },
+
+        getSelectedWorkshop(state) {
+            return state.selectedWorkshop;
         },
     },
 
@@ -53,6 +58,10 @@ export default new Vuex.Store({
         SET_MAP_CENTER(state, data) {
             state.mapCenter = data;
         },
+
+        SET_SELECTED_WORKSHOP(state, data) {
+            state.selectedWorkshop = data;
+        },
     },
 
     actions: {
@@ -77,6 +86,10 @@ export default new Vuex.Store({
         centerMap({ commit }, data) {
             console.log({ coordinates: data });
             commit("SET_MAP_CENTER", data);
+        },
+
+        viewWorkshop({ commit }, data) {
+            commit("SET_SELECTED_WORKSHOP", data);
         },
     },
 });
