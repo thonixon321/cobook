@@ -38,6 +38,7 @@ export default {
     mounted() {},
 
     created() {
+        //test
         this.activateLink("workshops");
         axios
             .get("/api/workshops/" + this.id)
