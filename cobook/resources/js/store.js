@@ -28,6 +28,8 @@ export default new Vuex.Store({
         },
 
         getMapCenter(state) {
+            state.mapCenter.lat = parseFloat(state.mapCenter.lat);
+            state.mapCenter.lng = parseFloat(state.mapCenter.lng);
             return state.mapCenter;
         },
 
@@ -66,6 +68,7 @@ export default new Vuex.Store({
 
     actions: {
         workshops({ commit }, query) {
+            let coordinates = {};
             return axios
                 .get("/api/workshops" + query)
                 .then((response) => {
@@ -73,6 +76,14 @@ export default new Vuex.Store({
                         data: response.data.data,
                     });
                     commit("SET_WORKSHOPS", response.data.data);
+                    coordinates.lat = parseFloat(
+                        response.data.data[0].location.latitude
+                    );
+                    coordinates.lng = parseFloat(
+                        response.data.data[0].location.longitude
+                    );
+
+                    commit("SET_MAP_CENTER", coordinates);
                 })
                 .catch((error) => {
                     alert(error);

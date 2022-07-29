@@ -197,7 +197,6 @@ export default {
             let coordinates = {};
             if (this.searchText == "") {
                 this.getWorkshops("");
-                this.centerMap(this.locationOfUser);
             } else {
                 if (this.searchType == "address") {
                     this.getWorkshops("?address=" + this.searchText);
@@ -206,10 +205,10 @@ export default {
                 } else {
                     this.getWorkshops("?hostName=" + this.searchText);
                 }
-                coordinates.lat = this.workshops[0].location.latitude;
-                coordinates.lng = this.workshops[0].location.longitude;
-                this.centerMap(coordinates);
             }
+            coordinates.lat = parseFloat(this.workshops[0].location.latitude);
+            coordinates.lng = parseFloat(this.workshops[0].location.longitude);
+            this.centerMap(coordinates);
         },
 
         retrieveAllWorkshops() {
@@ -229,13 +228,6 @@ export default {
         //get workshops
         this.getWorkshops("");
         this.activateLink("workshops");
-        //get user's coordinates
-        this.$getLocation({})
-            .then((coordinates) => {
-                this.centerMap(coordinates);
-                this.userLocation(coordinates);
-            })
-            .catch((error) => alert(error));
     },
 
     components: {

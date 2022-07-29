@@ -102,6 +102,7 @@ export default {
         },
 
         getWorkshopPosition(workshop) {
+            console.log({ center: this.mapCenter });
             console.log({
                 lat: parseFloat(workshop.location.latitude),
                 lng: parseFloat(workshop.location.longitude),
@@ -143,7 +144,11 @@ export default {
 
     mounted() {
         //add map to data obj
-        this.$refs.mapRef.$mapPromise.then((map) => (this.map = map));
+        this.$refs.mapRef.$mapPromise.then((map) => {
+            console.log("Map:", map);
+            this.map = map;
+            return;
+        });
     },
 
     created() {},
